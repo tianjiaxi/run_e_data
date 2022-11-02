@@ -21,7 +21,7 @@ for seed in ${SEEDS[@]}; do
         --inner_steps=2 \
         --inner_size=32 \
         --max_ft_steps=3 \
-        --max_seq_len=270 \
+        --max_seq_len=350 \
         --lambda_max_loss=2 \
         --inner_lambda_max_loss=5 \
         --tagging_scheme=BIOES \

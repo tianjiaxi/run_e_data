@@ -283,7 +283,9 @@ class Corpus(object):
             else:
                 tokenized_types = None
 
+            # in this for loop, we iterate one sample support and insert them into the output task list
             for i, (words, labels) in enumerate(zip(support["word"], support["label"])):
+                # the following is the entities within one sentence
                 entities = self._convert_label_to_entities_(labels)
                 self.max_len_dict["entity"] = max(
                     len(entities), self.max_len_dict["entity"]
@@ -297,6 +299,7 @@ class Corpus(object):
                 else:
                     raise ValueError("Invalid tagging scheme!")
                 guid = "task[%s]-%s" % (task_id, i)
+                # the following is the features within one sentence from one task sample
                 feature, token_sum = self._convert_example_to_feature_(
                     InputExample(
                         guid=guid,
@@ -308,6 +311,7 @@ class Corpus(object):
                     tokenized_types=tokenized_types,
                     concat_types=concat_types,
                 )
+                # the following is the features within one sentence of one task sample
                 tmp_support.append(feature)
                 tmp_support_tokens.append(token_sum)
                 if update_transition_matrix:
@@ -316,6 +320,7 @@ class Corpus(object):
             query = task["query"]
             tmp_query = []
             for i, (words, labels) in enumerate(zip(query["word"], query["label"])):
+                # the following is the entities within one sentence
                 entities = self._convert_label_to_entities_(labels)
                 self.max_len_dict["entity"] = max(
                     len(entities), self.max_len_dict["entity"]
@@ -344,7 +349,7 @@ class Corpus(object):
                 tmp_query_tokens.append(token_sum)
                 if update_transition_matrix:
                     all_labels.append(labels)
-
+            # corresponding to later eval_query[0]["input_ids"]
             output_tasks.append(
                 {
                     "support": tmp_support,
@@ -429,6 +434,7 @@ class Corpus(object):
             if label_list[ii] != "O"
             and (ii == N - 1 or label_list[ii] != label_list[ii + 1])
         ]
+        # here, in the following line, we insert s,e and entity real name
         return [(s, e, label_list[s]) for s, e in zip(S, E)]
 
     def _convert_label_to_BIOES_(self, label_list):
@@ -517,7 +523,7 @@ class Corpus(object):
             tokenized_types = []
         if "before" in concat_types:
             token_sum[-1] += 1 + len(tokenized_types)
-
+        # here, the labels mean BIOES for one sentence
         for words, labels in zip(example.words, example.labels):
             word_tokens = self.tokenizer.tokenize(words)
             token_sum.append(token_sum[-1] + len(word_tokens))
@@ -525,23 +531,36 @@ class Corpus(object):
             if len(word_tokens) == 0:
                 continue
             tokens.extend(word_tokens)
+
             # Use the real label id for the first token of the word, and padding ids for the remaining tokens
+            # do not calculate the later tokens loss
             label_ids.extend(
                 [self.label_map[labels]]
                 + [ignore_token_label_id] * (len(word_tokens) - 1)
             )
         self.max_len_dict["sentence"] = max(self.max_len_dict["sentence"], len(tokens))
+        # the e_ids mean start and end for entities
+        # the e_ids are the token start and end ids, not for words
         e_ids = [(token_sum[s], token_sum[e + 1] - 1) for s, e, _ in example.entities]
+        # the e_mask means tokens mask
         e_mask = np.zeros((self.max_entities_length, self.max_seq_length), np.int8)
         e_type_mask = np.zeros(
             (self.max_entities_length, 1 + self.negative_types_number), np.int8
         )
+        # here, we mask 1 to all the entities scope
         e_type_mask[: len(e_ids), :] = np.ones(
             (len(e_ids), 1 + self.negative_types_number), np.int8
         )
+        # make the tokens belonging to entities be 1
         for idx, (s, e) in enumerate(e_ids):
+            #if tokens belong to entities, give one indication
             e_mask[idx][s : e + 1] = 1
-        e_type_ids = [self.entity_types.types_map[t] for _, _, t in example.entities]
+        # we should change the following code line
+        # we change it because of the 'product' warning
+        # here, we use _ because they represent token order.
+        e_type_ids = [self.entity_types.types_map["art-painting"] for _, _, t in example.entities]
+        # e_type_ids = [self.entity_types.types_map[t] for _, _, t in example.entities]
+        # the following entities means token start end entity type
         entities = [(s, e, t) for (s, e), t in zip(e_ids, e_type_ids)]
         batch_types = [self.entity_types.types_map[ii] for ii in example.types]
         # e_type_ids[i, 0] is the possitive label, while e_type_ids[i, 1:] are negative labels
@@ -584,6 +603,7 @@ class Corpus(object):
         else:
             # OPTION 2: Concatenated tokenized types at END
             tokens += [sep_token]
+            # ignore_token_label_id means no crossentropy loss
             label_ids += [ignore_token_label_id]
             if sep_token_extra:
                 raise ValueError("Unexpected path!")
@@ -625,6 +645,7 @@ class Corpus(object):
             input_ids += [pad_token] * padding_length
             input_mask += [0 if mask_padding_with_zero else 1] * padding_length
             segment_ids += [pad_token_segment_id] * padding_length
+            # pad_token_label_id is -1
             label_ids += [pad_token_label_id] * padding_length
 
         assert len(input_ids) == self.max_seq_length

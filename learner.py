@@ -548,6 +548,7 @@ class Learner(nn.Module):
             [type_g, type_preds],
             "{}/{}_{}_preds.pkl".format(store_dir, "typing", set_type),
         )
+
         pred = [[jj[:-1] for jj in ii] for ii in predes]
         p, r, f1 = self.cacl_f1(targets, pred)
 
@@ -556,10 +557,12 @@ class Learner(nn.Module):
         ]
         p_t, r_t, f1_t = self.cacl_f1(targets, pred)
 
+        #  logic is [  [ (entities) ]sentences     ]batch samples
         span_p, span_r, span_f1 = self.cacl_f1(
             [[(jj[0], jj[1]) for jj in ii] for ii in targets], spans
         )
-        type_p, type_r, type_f1 = self.cacl_f1(type_g, type_preds)
+
+        # type_p, type_r, type_f1 = self.cacl_f1(type_g, type_preds)
 
         results = {
             "loss": eval_loss,

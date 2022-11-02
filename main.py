@@ -205,13 +205,13 @@ def train_meta(args):
 
             F1_valid = result_valid["f1"]
             is_best = False
-            if F1_valid > F1_valid_best["all"]:
-                logger.info("===> Best Valid F1: {}".format(F1_valid))
-                logger.info("  Saving model...")
-                learner.save_model(args.result_dir, "en", args.max_seq_len, "all")
-                F1_valid_best["all"] = F1_valid
-                best_step = step
-                is_best = True
+            # if F1_valid > F1_valid_best["all"]:
+            #     logger.info("===> Best Valid F1: {}".format(F1_valid))
+            #     logger.info("  Saving model...")
+            #     learner.save_model(args.result_dir, "en", args.max_seq_len, "all")
+            #     F1_valid_best["all"] = F1_valid
+            #     best_step = step
+            #     is_best = True
             #
             if (
                 result_valid["span_f1"] > F1_valid_best["span"]
@@ -222,14 +222,14 @@ def train_meta(args):
                 learner.save_model(args.result_dir, "en", args.max_seq_len, "span")
                 logger.info("Best Span Store {}".format(step))
                 is_best = True
-            if (
-                result_valid["type_f1"] > F1_valid_best["type"]
-                and args.train_mode != "span"
-            ):
-                F1_valid_best["type"] = result_valid["type_f1"]
-                learner.save_model(args.result_dir, "en", args.max_seq_len, "type")
-                logger.info("Best Type Store {}".format(step))
-                is_best = True
+            # if (
+            #     result_valid["type_f1"] > F1_valid_best["type"]
+            #     and args.train_mode != "span"
+            # ):
+            #     F1_valid_best["type"] = result_valid["type_f1"]
+            #     learner.save_model(args.result_dir, "en", args.max_seq_len, "type")
+            #     logger.info("Best Type Store {}".format(step))
+            #     is_best = True
 
             if is_best and not args.ignore_eval_test:
                 logger.info("********** Scheme: evaluate - [test] **********")
