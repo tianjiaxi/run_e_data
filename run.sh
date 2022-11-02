@@ -15,13 +15,13 @@ for seed in ${SEEDS[@]}; do
         --K=${K} \
         --similar_k=10 \
         --eval_every_meta_steps=100 \
-        --name=10-k_100_2_32_3_max_loss_2_5_BIOES \
+        --name=10-k_100_2_16_3_max_loss_2_5_BIOES \
         --train_mode=span \
         --dataset=FewNERD\
         --inner_steps=2 \
-        --inner_size=32 \
+        --inner_size=16 \
         --max_ft_steps=3 \
-        --max_seq_len=350 \
+        --max_seq_len=300 \
         --lambda_max_loss=2 \
         --inner_lambda_max_loss=5 \
         --tagging_scheme=BIOES \
