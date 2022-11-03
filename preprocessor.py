@@ -178,7 +178,7 @@ class Corpus(object):
         self.n_labels = len(label_list)
         self.tagging_scheme = tagging
         self.max_len_dict = {"entity": 0, "type": 0, "sentence": 0}
-        self.max_entities_length = 50
+        self.max_entities_length = 100
         self.viterbi = viterbi
         self.dataset = dataset
         self.negative_types_number = negative_types_number
