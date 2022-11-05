@@ -562,7 +562,7 @@ class Learner(nn.Module):
             [[(jj[0], jj[1]) for jj in ii] for ii in targets], spans
         )
 
-        # type_p, type_r, type_f1 = self.cacl_f1(type_g, type_preds)
+        type_p, type_r, type_f1 = self.cacl_f1(type_g, type_preds)
 
         results = {
             "loss": eval_loss,
