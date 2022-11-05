@@ -98,7 +98,7 @@ def train_meta(args):
         train_corpus = valid_corpus
     else:
         if args.add_extra:
-            train_data_path = './extra_data/new_r_o.jsonl'
+            train_data_path = './extra_data/a_new_r_o.jsonl'
             train_corpus = Corpus(
                 logger,
                 train_data_path,
