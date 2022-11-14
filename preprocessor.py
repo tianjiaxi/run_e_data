@@ -196,6 +196,10 @@ class Corpus(object):
             )  # pij: p(j -> i)
             if self.n_labels == 3:
                 self.transition_matrix[2][0] = -10000  # p(O -> I) = 0
+            elif self.n_labels == 2:
+                self.transition_matrix = torch.zeros(
+                    [self.n_labels, self.n_labels], device=device
+                )  # pij: p(j -> i)
             elif self.n_labels == 5:
                 for (i, j) in [
                     (2, 0),
