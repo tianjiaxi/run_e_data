@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT license.
 
-SEEDS=(186 171 354 550 667 985)
+SEEDS=(550 175)
 N=5
 K=1
 mode=inter
@@ -24,7 +24,7 @@ for seed in ${SEEDS[@]}; do
         --max_seq_len=300 \
         --lambda_max_loss=2 \
         --inner_lambda_max_loss=5 \
-        --tagging_scheme=BIOES \
+        --tagging_scheme=IO \
         --viterbi=hard \
         --add_extra \
         --concat_types=None \
